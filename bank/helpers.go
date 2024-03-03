@@ -13,7 +13,6 @@ type Response struct {
 }
 
 func JsonResponse(w http.ResponseWriter, status int, message string, body ...any) {
-	w.WriteHeader(status)
 	if len(body) == 0 {
 		body = nil
 	}
@@ -23,6 +22,7 @@ func JsonResponse(w http.ResponseWriter, status int, message string, body ...any
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
 	_, _ = w.Write(jsonResponse)
 	return
 }

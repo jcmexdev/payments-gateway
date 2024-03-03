@@ -21,6 +21,7 @@ WORKDIR /app
 
 # Copia el binario compilado desde la etapa de construcción al contenedor de producción
 COPY --from=builder /go/src/app/payments-app .
+COPY --from=builder /go/src/app/payments/.env .
 
 # Expone el puerto en el que se ejecuta tu aplicación (ajusta según sea necesario)
 EXPOSE 8080

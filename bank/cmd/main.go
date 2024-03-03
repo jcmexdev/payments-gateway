@@ -35,8 +35,8 @@ func main() {
 	http.HandleFunc("/transfer", transferHandler)
 	http.HandleFunc("/deposit", depositHandler)
 	http.HandleFunc("/withdraw", withdrawHandler)
-	fmt.Println("Server running on http://localhost:3000")
-	log.Fatal(http.ListenAndServe("localhost:3000", nil))
+	fmt.Println("Server running on 0.0.0.0:3000")
+	log.Fatal(http.ListenAndServe("0.0.0.0:3000", nil))
 }
 
 func depositHandler(w http.ResponseWriter, req *http.Request) {
@@ -49,7 +49,7 @@ func depositHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if amount, err := strconv.ParseFloat(amountqs, 64); err != nil {
-		fmt.Fprintf(w, "Invalid amount number!")
+		bank.JsonResponse(w, http.StatusBadRequest, "Invalid amount number!")
 	} else {
 		account, ok := accounts[numberqs]
 		if !ok {
@@ -57,7 +57,8 @@ func depositHandler(w http.ResponseWriter, req *http.Request) {
 		} else {
 			err := account.Deposit(amount)
 			if err != nil {
-				fmt.Fprintf(w, "%v", err)
+				println(err.Error())
+				bank.JsonResponse(w, http.StatusBadRequest, err.Error())
 			}
 			bank.JsonResponse(w, http.StatusOK, "Deposito exitoso", account.Balance)
 		}
@@ -96,7 +97,14 @@ func transferHandler(w http.ResponseWriter, req *http.Request) {
 	destinationAccount := req.URL.Query().Get("destinationAccountNumber")
 
 	if originAccount == "" {
-		fmt.Fprintf(w, "Account number is missing!")
+		//fmt.Fprintf(w, "Account number is missing!")
+		bank.JsonResponse(w, http.StatusBadRequest, "originAccount number is missing!")
+		return
+	}
+
+	if destinationAccount == "" {
+		//fmt.Fprintf(w, "Account number is missing!")
+		bank.JsonResponse(w, http.StatusBadRequest, "destinationAccount number is missing!")
 		return
 	}
 
@@ -110,8 +118,10 @@ func transferHandler(w http.ResponseWriter, req *http.Request) {
 		} else {
 			err := origin.Transfer(amount, destination)
 			if err != nil {
-				fmt.Fprintf(w, "%v", err)
+				fmt.Println("Error en la transferencia: ", err.Error())
+				bank.JsonResponse(w, http.StatusBadRequest, err.Error())
 			} else {
+				fmt.Println("Transferencia exitosa de ", amount, " de ", originAccount, " a ", destinationAccount)
 				bank.JsonResponse(w, http.StatusOK, "Transferencia exitosa")
 			}
 		}

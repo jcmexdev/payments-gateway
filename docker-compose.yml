@@ -6,19 +6,40 @@ services:
       context: .
       dockerfile: ./bank/build/Dockerfile
     ports:
-      - 3000:3000
-#      - ${BANK_API_PORT}:${BANK_API_PORT}
+      - "3000:3000"
+    expose:
+      - "3000"
     networks:
-      - payments-gateway-network
-
+        - payments-gateway-network
 
   payments:
     container_name: ${COMPOSE_PROJECT_NAME}-payments-api
+    env_file:
+      - payments/.env
     build:
       context: .
       dockerfile: ./payments/build/Dockerfile
     ports:
-      - ${PAYMENTS_API_PORT}:${PAYMENTS_API_PORT}
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    networks:
+      - payments-gateway-network
+
+  mongodb:
+    container_name: ${COMPOSE_PROJECT_NAME}-mongodb
+    image: mongo:5.0
+    environment:
+      - MONGO_INITDB_DATABASE=app
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - "27017:27017"
+    volumes:
+      - ~/mongodata:/data/db
+    networks:
+      - payments-gateway-network
+
 networks:
-  payments-gateway-network:
-    driver: bridge
+    payments-gateway-network:
+        driver: bridge
