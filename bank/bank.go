@@ -9,7 +9,6 @@ type Customer struct {
 type Account struct {
 	Customer
 	CardNumber string
-	Number     int32
 	Balance    float64
 }
 

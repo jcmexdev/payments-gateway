@@ -15,7 +15,6 @@ func main() {
 		Customer: bank.Customer{
 			Name: "John Client",
 		},
-		Number:     100,
 		CardNumber: "1111-2222-3333-4444",
 		Balance:    100,
 	}
@@ -24,19 +23,23 @@ func main() {
 		Customer: bank.Customer{
 			Name: "John Merchant",
 		},
-		Number:     100,
 		CardNumber: "1234-5678-1234-5678",
 		Balance:    100,
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "Welcome to the bank!")
+		bank.JsonResponse(w, http.StatusOK, "Welcome to the bank!")
 	})
 	http.HandleFunc("/transfer", transferHandler)
 	http.HandleFunc("/deposit", depositHandler)
 	http.HandleFunc("/withdraw", withdrawHandler)
+	http.HandleFunc("/balance", balanceHandler)
 	fmt.Println("Server running on 0.0.0.0:3000")
 	log.Fatal(http.ListenAndServe("0.0.0.0:3000", nil))
+}
+
+func balanceHandler(writer http.ResponseWriter, request *http.Request) {
+	bank.JsonResponse(writer, http.StatusOK, "Balance", accounts)
 }
 
 func depositHandler(w http.ResponseWriter, req *http.Request) {
