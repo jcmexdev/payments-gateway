@@ -2,9 +2,12 @@ package services
 
 import (
 	"context"
+	"errors"
+	"github.com/gofiber/fiber/v2"
 	"payments/internal/application/ports/integrations"
 	"payments/internal/application/ports/repositories"
 	"payments/internal/domain/entities"
+	"payments/internal/infraestructure/adapters/errors/my_bank_errors"
 )
 
 type MyBankPaymentsService struct {
@@ -20,6 +23,9 @@ func (p MyBankPaymentsService) Pay(ctx context.Context, originAccount string, de
 	}
 	transaction, err := p.repo.Pay(ctx, originAccount, destinationAccount, amount)
 	if err != nil {
+		if errors.Is(err, my_bank_errors.ErrFundsInsufficient) {
+			return nil, fiber.NewError(fiber.StatusForbidden, my_bank_errors.ErrFundsInsufficient.Error())
+		}
 		return nil, err
 	}
 	return transaction, nil
