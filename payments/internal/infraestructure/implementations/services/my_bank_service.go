@@ -13,21 +13,32 @@ type MyBankPaymentsService struct {
 	integration integrations.IBankIntegration
 }
 
-func (p MyBankPaymentsService) Pay(ctx context.Context, originAccount string, destinationAccount string, amount float64) error {
+func (p MyBankPaymentsService) Pay(ctx context.Context, originAccount string, destinationAccount string, amount float64) (*entities.Transaction, error) {
 	_, err := p.integration.Transfer(originAccount, destinationAccount, amount)
+	if err != nil {
+		return nil, err
+	}
+	transaction, err := p.repo.Pay(ctx, originAccount, destinationAccount, amount)
+	if err != nil {
+		return nil, err
+	}
+	return transaction, nil
+}
+
+func (p MyBankPaymentsService) Refund(ctx context.Context, transactionId string) error {
+	transaction, err := p.repo.GetTransaction(ctx, transactionId)
 	if err != nil {
 		return err
 	}
-	err = p.repo.Pay(nil, originAccount, destinationAccount, amount)
+	err = p.integration.Refund(*transaction)
+	if err != nil {
+		return err
+	}
+	err = p.repo.Refund(ctx, transactionId)
 	if err != nil {
 		return err
 	}
 	return nil
-}
-
-func (p MyBankPaymentsService) Refund(ctx context.Context, transactionId string) error {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (p MyBankPaymentsService) History(ctx context.Context) ([]entities.Customer, error) {
@@ -36,6 +47,14 @@ func (p MyBankPaymentsService) History(ctx context.Context) ([]entities.Customer
 		return nil, err
 	}
 	return history, nil
+}
+
+func (p MyBankPaymentsService) GetTransaction(ctx context.Context, transactionId string) (*entities.Transaction, error) {
+	transaction, err := p.repo.GetTransaction(ctx, transactionId)
+	if err != nil {
+		return nil, err
+	}
+	return transaction, nil
 }
 
 func NewMyBankPaymentService(repo repositories.IPaymentsRepository, myBankIntegration integrations.IBankIntegration) *MyBankPaymentsService {

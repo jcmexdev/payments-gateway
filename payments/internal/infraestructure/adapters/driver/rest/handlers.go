@@ -25,6 +25,8 @@ func (r *Handler) SetUpRoutes() {
 	v1 := r.Fiber.Server.Group("/api/v1")
 	v1.Get("/health", r.HealthCheck)
 	v1.Get("/transfer", r.Transfer)
+	v1.Get("/refund", r.Refund)
+	v1.Get("/transaction/:transactionId", r.PaymentDetails)
 }
 
 func (r *Handler) Start(address string) {
@@ -49,11 +51,35 @@ func (r *Handler) Transfer(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid amount")
 	}
 
-	err = r.myBankPaymentService.Pay(ctx.Context(), originAccount, destinationAccount, amountFloat)
+	transaction, err := r.myBankPaymentService.Pay(ctx.Context(), originAccount, destinationAccount, amountFloat)
 
 	if err != nil {
 		return fiber.NewError(fiber.StatusServiceUnavailable, err.Error())
 	}
 
-	return ctx.JSON(fiber.Map{"status": "ok"})
+	return ctx.JSON(transaction)
+}
+
+func (r *Handler) Refund(ctx *fiber.Ctx) error {
+	transactionId := ctx.Params("transactionId")
+
+	err := r.myBankPaymentService.Refund(ctx.Context(), transactionId)
+
+	if err != nil {
+		return fiber.NewError(fiber.StatusServiceUnavailable, err.Error())
+	}
+
+	return ctx.JSON(map[string]string{"status": "ok", "message": "Refund successful"})
+}
+
+func (r *Handler) PaymentDetails(ctx *fiber.Ctx) error {
+	transactionId := ctx.Params("transactionId")
+
+	transaction, err := r.myBankPaymentService.GetTransaction(ctx.Context(), transactionId)
+
+	if err != nil {
+		return fiber.NewError(fiber.StatusServiceUnavailable, err.Error())
+	}
+
+	return ctx.JSON(transaction)
 }

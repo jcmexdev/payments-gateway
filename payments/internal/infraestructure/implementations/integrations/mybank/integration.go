@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/gofiber/fiber/v2"
+	"payments/internal/domain/entities"
 	"payments/internal/infraestructure/adapters/dtos"
 )
 
@@ -35,7 +36,32 @@ func (m *Integration) Transfer(originAccount string, destinationAccount string, 
 		return nil, nil
 	}
 	return nil, fiber.NewError(result.StatusCode(), errorResponse.Message)
+}
 
+func (m *Integration) Refund(transaction entities.Transaction) error {
+
+	var res dtos.MyBankResponse
+	var errorResponse dtos.MyBankResponse
+	result, err := m.httpClient.R().
+		SetQueryParams(map[string]string{
+			"originAccountNumber":      transaction.DestinationAccount,
+			"destinationAccountNumber": transaction.OriginAccount,
+			"amount":                   fmt.Sprintf("%f", transaction.Amount),
+		}).
+		SetHeader("Accept", "application/json").
+		SetResult(&res).
+		SetError(&errorResponse).
+		Get(m.baseUrl + "/transfer")
+
+	if err != nil {
+		return err
+	}
+
+	if result.IsSuccess() {
+		println(result.String())
+		return nil
+	}
+	return fiber.NewError(result.StatusCode(), errorResponse.Message)
 }
 
 func NewMyBankIntegration() *Integration {
