@@ -3,6 +3,7 @@ package fiber
 import (
 	"errors"
 	"github.com/bytedance/sonic"
+	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"payments/internal/infraestructure/adapters/dtos"
@@ -29,6 +30,7 @@ func NewFiberServer() *Server {
 		},
 	})
 	server.Use(cors.New())
+	server.Use(swagger.New(swagger.ConfigDefault))
 	return &Server{
 		Server: server,
 	}

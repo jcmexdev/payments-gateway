@@ -1,6 +1,7 @@
 package rest
 
 import (
+	swagger "github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 	"log"
 	"payments/internal/application/ports/services"
@@ -26,6 +27,7 @@ func (r *Handler) SetUpRoutes() {
 	v1.Post("/transaction", r.Transfer)
 	v1.Get("/transaction/:transactionId", r.PaymentDetails)
 	v1.Post("/transaction/:transactionId/refund", r.Refund)
+	v1.Get("/docs/*", swagger.New(swagger.ConfigDefault))
 }
 
 func (r *Handler) Start(address string) {

@@ -12,7 +12,6 @@ func TestMain(m *testing.M) {
 		Customer: Customer{
 			Name: "John Doe Client",
 		},
-		Number:     1001,
 		Balance:    0,
 		CardNumber: "1234-5678-1234-5678",
 	}
@@ -21,7 +20,6 @@ func TestMain(m *testing.M) {
 		Customer: Customer{
 			Name: "John Doe Merchant",
 		},
-		Number:     1002,
 		Balance:    0,
 		CardNumber: "1111-2222-3333-4444",
 	}

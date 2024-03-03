@@ -1,0 +1,301 @@
+{
+	"info": {
+		"_postman_id": "843fb336-6a9c-44a3-80f7-584bb4f0726c",
+		"name": "payment-gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3729173"
+	},
+	"item": [
+		{
+			"name": "bank",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bankapi}}/health",
+							"host": [
+								"{{bankapi}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bankapi}}/balance",
+							"host": [
+								"{{bankapi}}"
+							],
+							"path": [
+								"balance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deposit",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bankapi}}/deposit?accountNumber={{originAccount}}&amount=100",
+							"host": [
+								"{{bankapi}}"
+							],
+							"path": [
+								"deposit"
+							],
+							"query": [
+								{
+									"key": "accountNumber",
+									"value": "{{originAccount}}"
+								},
+								{
+									"key": "amount",
+									"value": "100"
+								},
+								{
+									"key": "accountNumber",
+									"value": "{{destinationAccount}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "withdraw",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bankapi}}/withdraw?accountNumber={{originAccount}}&amount=300",
+							"host": [
+								"{{bankapi}}"
+							],
+							"path": [
+								"withdraw"
+							],
+							"query": [
+								{
+									"key": "accountNumber",
+									"value": "{{originAccount}}"
+								},
+								{
+									"key": "amount",
+									"value": "300"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "transfer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{bankapi}}/transfer?originAccountNumber={{originAccount}}&amount=300&destinationAccountNumber={{destinationAccount}}",
+							"host": [
+								"{{bankapi}}"
+							],
+							"path": [
+								"transfer"
+							],
+							"query": [
+								{
+									"key": "originAccountNumber",
+									"value": "{{originAccount}}"
+								},
+								{
+									"key": "amount",
+									"value": "300"
+								},
+								{
+									"key": "destinationAccountNumber",
+									"value": "{{destinationAccount}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "payments",
+			"item": [
+				{
+					"name": "transactions",
+					"item": [
+						{
+							"name": "/transfer",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"const resp = JSON.parse(responseBody);",
+											"postman.setEnvironmentVariable('lastTransactionId', resp.body.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"originAccount\": \"{{originAccount}}\",\n    \"destinationAccount\": \"{{destinationAccount}}\",\n    \"amount\": 100\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{paymentsapi}}/transaction",
+									"host": [
+										"{{paymentsapi}}"
+									],
+									"path": [
+										"transaction"
+									],
+									"query": [
+										{
+											"key": "originAccount",
+											"value": "{{originAccount}}",
+											"disabled": true
+										},
+										{
+											"key": "destinationAccount",
+											"value": "{{destinationAccount}}",
+											"disabled": true
+										},
+										{
+											"key": "amount",
+											"value": "w",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "/:transactionId",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{paymentsapi}}/transaction/:transactionId",
+							"host": [
+								"{{paymentsapi}}"
+							],
+							"path": [
+								"transaction",
+								":transactionId"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "200",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "transactionId",
+									"value": "{{lastTransactionId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/:transactionId/refund",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{paymentsapi}}/transaction/:transactionId/refund",
+							"host": [
+								"{{paymentsapi}}"
+							],
+							"path": [
+								"transaction",
+								":transactionId",
+								"refund"
+							],
+							"variable": [
+								{
+									"key": "transactionId",
+									"value": "{{lastTransactionId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

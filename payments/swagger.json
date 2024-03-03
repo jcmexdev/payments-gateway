@@ -1,0 +1,254 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "payment-gateway",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://{{bankapi}}"
+    },
+    {
+      "url": "http://{{paymentsapi}}"
+    }
+  ],
+  "tags": [
+    {
+      "name": "bank"
+    },
+    {
+      "name": "payments"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "bank"
+        ],
+        "summary": "health",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/balance": {
+      "get": {
+        "tags": [
+          "bank"
+        ],
+        "summary": "balance",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/deposit": {
+      "get": {
+        "tags": [
+          "bank"
+        ],
+        "summary": "deposit",
+        "parameters": [
+          {
+            "name": "accountNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{originAccount}}"
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": "100"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/withdraw": {
+      "get": {
+        "tags": [
+          "bank"
+        ],
+        "summary": "withdraw",
+        "parameters": [
+          {
+            "name": "accountNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{originAccount}}"
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": "300"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/transfer": {
+      "get": {
+        "tags": [
+          "bank"
+        ],
+        "summary": "transfer",
+        "parameters": [
+          {
+            "name": "originAccountNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{originAccount}}"
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "example": "300"
+          },
+          {
+            "name": "destinationAccountNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{destinationAccount}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/transaction": {
+      "post": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "/transfer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "originAccount": "{{originAccount}}",
+                  "destinationAccount": "{{destinationAccount}}",
+                  "amount": 100
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/transaction/{transactionId}": {
+      "get": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "/:transactionId",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "example": "{{lastTransactionId}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/transaction/{transactionId}/refund": {
+      "post": {
+        "tags": [
+          "payments"
+        ],
+        "summary": "/:transactionId/refund",
+        "requestBody": {
+          "content": {}
+        },
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "example": "{{lastTransactionId}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

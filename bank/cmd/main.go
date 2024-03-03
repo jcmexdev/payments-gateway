@@ -16,7 +16,7 @@ func main() {
 			Name: "John Client",
 		},
 		CardNumber: "1111-2222-3333-4444",
-		Balance:    100,
+		Balance:    1000,
 	}
 
 	accounts["1234-5678-1234-5678"] = &bank.Account{
@@ -24,7 +24,7 @@ func main() {
 			Name: "John Merchant",
 		},
 		CardNumber: "1234-5678-1234-5678",
-		Balance:    100,
+		Balance:    500,
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
