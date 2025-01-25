@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   bank:
     container_name: ${COMPOSE_PROJECT_NAME}-bank-api
@@ -10,7 +9,7 @@ services:
     expose:
       - "3000"
     networks:
-        - payments-gateway-network
+      - payments-gateway-network
 
   payments:
     container_name: ${COMPOSE_PROJECT_NAME}-payments-api
@@ -20,7 +19,7 @@ services:
       context: .
       dockerfile: ./payments/build/Dockerfile
     ports:
-      - "5000:5000"
+      - "5001:5000"
     depends_on:
       - mongodb
     networks:
@@ -36,10 +35,11 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ~/mongodata:/data/db
+      - payments-gateway-volume:/data/db
     networks:
       - payments-gateway-network
-
+volumes:
+  payments-gateway-volume:
 networks:
-    payments-gateway-network:
-        driver: bridge
+  payments-gateway-network:
+    driver: bridge
